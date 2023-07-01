@@ -10,8 +10,6 @@ from sqlalchemy import text
 
 
 random.seed(100)
-# invoke_url = "https://YourAPIInvokeURL/YourDeploymentStage/topics/YourTopicName"
-invoke_url = "https://s2ez23hzo7.execute-api.us-east-1.amazonaws.com/test/topics/"
 db_cred_file = './db_cred.yaml'
 
 
@@ -34,12 +32,11 @@ class AWSDBConnector:
     def read_db_creds(self, file):
         """
         This method reads the database credentials from a file and returns a dict of the credentials
-
+        
         Args:
         -----------------------------------------------
         file (str) : The yaml file name containing the database credentials
-
-
+        
         Returns:
         -------------------------------------------------
         cred (dict) : The dictionary object of the database credentials
@@ -66,47 +63,49 @@ class AWSDBConnector:
 new_connector = AWSDBConnector()
 
 
-def run_infinite_post_data_loop():
+def run_infinite_post_data_loop(func):
 
     """
     This method makes an infinite API request to the MSK cluster to post messages to three topics.The message posted to the topics is randomly selected from the Pinterest table hosted on AWS dababase. The topics are the pinterest post, geolocation of the post and the users details"""
 
 
-    while True:
-        sleep(random.randrange(0, 5))
-        random_row = random.randint(0, 11000)
-        engine = new_connector.create_db_connector()
+    def wrapper(topic_stream, *arg):
+        topics_or_stream = topic_stream
+        while True:
+            sleep(random.randrange(0, 5))
+            random_row = random.randint(0, 11000)
+            engine = new_connector.create_db_connector()
 
-        with engine.connect() as connection:
+            with engine.connect() as connection:
 
-            pin_string = text(f"SELECT * FROM pinterest_data LIMIT {random_row}, 1")
-            pin_selected_row = connection.execute(pin_string)
-            
-            for row in pin_selected_row:
-                pin_result = dict(row._mapping)
-                post_message(pin_result,'12853887c065.pin')
+                pin_string = text(f"SELECT * FROM pinterest_data LIMIT {random_row}, 1")
+                pin_selected_row = connection.execute(pin_string)
+                
+                
+                for row in pin_selected_row:
+                    pin_result = dict(row._mapping)
+                    func(topics_or_stream[0], pin_result)
 
-            geo_string = text(f"SELECT * FROM geolocation_data LIMIT {random_row}, 1")
-            geo_selected_row = connection.execute(geo_string)
-            
-            for row in geo_selected_row:
-                geo_result = dict(row._mapping)
-                post_message(geo_result,'12853887c065.geo')
+                geo_string = text(f"SELECT * FROM geolocation_data LIMIT {random_row}, 1")
+                geo_selected_row = connection.execute(geo_string)
+                
+                for row in geo_selected_row:
+                    geo_result = dict(row._mapping)
+                    func(topics_or_stream[1], geo_result)
 
-            user_string = text(f"SELECT * FROM user_data LIMIT {random_row}, 1")
-            user_selected_row = connection.execute(user_string)
-            
-            for row in user_selected_row:
-                user_result = dict(row._mapping)
-                post_message(user_result,'12853887c065.user')
-        connection.close()
+                user_string = text(f"SELECT * FROM user_data LIMIT {random_row}, 1")
+                user_selected_row = connection.execute(user_string)
+                
+                for row in user_selected_row:
+                    user_result = dict(row._mapping)
+                    func(topics_or_stream[2], user_result)
+            connection.close()
 
-def post_message(message_dict, topic_name):
-    #To send JSON messages you need to follow this structure
-    # value_dict = {}
-    # for val in message_dict:
-    #     value_dict[val] = message_dict[val]
+    return wrapper
 
+@run_infinite_post_data_loop
+def post_message(topics, *arg):
+    
     """
     This methods make RESTful API request to Apache MSK cluster.
 
@@ -120,19 +119,20 @@ def post_message(message_dict, topic_name):
     status_code (int) : The response status code from the server
 
     """
-
+    
     payload = json.dumps({
         "records": [
             {
             #Data should be send as pairs of column_name:value, with different columns separated by commas       
-            "value": message_dict
+            "value": arg
             }
         ]
     }, default=str)
 
     headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
 
-    response = requests.request("POST", invoke_url+topic_name, headers=headers, data=payload)
+    invoke_url = f"https://s2ez23hzo7.execute-api.us-east-1.amazonaws.com/test/topics/{topics}"
+    response = requests.request("POST", invoke_url, headers=headers, data=payload)
     print(response.status_code)
     
     return response.status_code
@@ -140,7 +140,9 @@ def post_message(message_dict, topic_name):
 
 
 if __name__ == "__main__":
-    run_infinite_post_data_loop()
+    # run_infinite_post_data_loop()
+    topics = ['12853887c065.pin', '12853887c065.geo', '12853887c065.user']
+    post_message(topics)
     print('Working')
 
     
