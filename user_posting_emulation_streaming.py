@@ -74,13 +74,14 @@ def stream_message(stream_name, message_dict):
     headers = {'Content-Type': 'application/json'}
     
     invoke_url = f"https://s2ez23hzo7.execute-api.us-east-1.amazonaws.com/test/streams/{stream_name}/record"
-    print(invoke_url)
+    # print(invoke_url)
+    # print(payload)
     response = requests.request("PUT", invoke_url, headers=headers, data=payload)
 
     print(response.status_code)
-    # print('Put completed')
+    # # print('Put completed')
     print(response.text)
-    # print(response.json)
+    print(response.json)
 
 
 
