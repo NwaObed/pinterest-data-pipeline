@@ -5,6 +5,7 @@
 - EC2 Instance
 - Kinesis Console
 - S3
+- Databricks
 
 
 ### Set up the virtual environment
