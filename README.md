@@ -1,5 +1,11 @@
 # Pinterest Data Pipeline
 
+### Requirements
+- AWS account
+- EC2 Instance
+- Kinesis Console
+- S3
+
 
 ### Set up the virtual environment
 
