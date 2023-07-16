@@ -25,7 +25,9 @@ python3 python3 user_posting_emulation.py
 If you go to your S3, you should start seeing the data arriving
 
 - For streaming data
-```python3 user_posting_emulation_streaming.py```
+```
+python3 user_posting_emulation_streaming.py
+```
 If you go to Kinesis console, you should see the streaming data arriving.
 
 # Upload notebook to databricks
