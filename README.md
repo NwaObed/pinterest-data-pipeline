@@ -5,6 +5,7 @@
 
 ```python
 git clone https://github.com/NwaObed/pinterest-data-pipeline.git
+
 conda env create -f pinterest_env.yaml -n <new-env>
 ```
 This will emulate the virtual environment from the `pinterest_env.yaml` file and install the `dependencies.`
