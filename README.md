@@ -44,5 +44,5 @@ If you go to Kinesis console, you should see the streaming data arriving.
 Go on to your databricks account:
 - Click on file
 - Click on `Import Notebook`
-- Drag and drop the notebook or browse to the location
+- Drag and drop the notebook or browse to the location of the `Notebook` folder
 - Click on `Import`
