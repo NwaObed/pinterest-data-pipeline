@@ -10,7 +10,7 @@ from sqlalchemy import text
 
 
 random.seed(100)
-db_cred_file = './db_cred.yaml'
+db_cred_file = '../Cred/db_cred.yaml'
 
 
 class AWSDBConnector:
@@ -63,13 +63,31 @@ class AWSDBConnector:
 new_connector = AWSDBConnector()
 
 
-def run_infinite_post_data_loop(func):
+def run_infinite_post_data_loop(post):
 
     """
-    This method makes an infinite API request to the MSK cluster to post messages to three topics.The message posted to the topics is randomly selected from the Pinterest table hosted on AWS dababase. The topics are the pinterest post, geolocation of the post and the users details"""
+    Decorator function that makes an infinite API request to the MSK cluster to post messages to three topics.The message posted to the topics is randomly selected from the Pinterest table hosted on AWS dababase. The topics are the pinterest post, geolocation of the post and the users details
+    
+    ---------------------------------------------------------------------
+    Args:
+    post : original function to be extended
 
 
-    def wrapper(topic_stream, *arg):
+    Return:
+    wrapper (function)
+    """
+
+
+    def wrapper(topic_stream, *msg):
+        """
+        This function extends the functionality of post() function.
+        
+        Arg:
+        ------------------------------------------------------------------------
+        topic_stream (list) : list of topic names or stream names
+        *msg (dict) : key-value pair message posted
+
+        """
         topics_or_stream = topic_stream
         while True:
             sleep(random.randrange(0, 5))
@@ -84,36 +102,35 @@ def run_infinite_post_data_loop(func):
                 
                 for row in pin_selected_row:
                     pin_result = dict(row._mapping)
-                    func(topics_or_stream[0], pin_result)
+                    post(topics_or_stream[0], pin_result)
 
                 geo_string = text(f"SELECT * FROM geolocation_data LIMIT {random_row}, 1")
                 geo_selected_row = connection.execute(geo_string)
                 
                 for row in geo_selected_row:
                     geo_result = dict(row._mapping)
-                    func(topics_or_stream[1], geo_result)
+                    post(topics_or_stream[1], geo_result)
 
                 user_string = text(f"SELECT * FROM user_data LIMIT {random_row}, 1")
                 user_selected_row = connection.execute(user_string)
                 
                 for row in user_selected_row:
                     user_result = dict(row._mapping)
-                    func(topics_or_stream[2], user_result)
+                    post(topics_or_stream[2], user_result)
             connection.close()
 
     return wrapper
 
 @run_infinite_post_data_loop
-def post_message(topics, *arg):
+def post_message(topics, *msg):
     
     """
     This methods make RESTful API request to Apache MSK cluster.
 
     Args:
     ----------------------------------------------------------------------------------------
-    message_dict (json) : The message requested to the API
-    
     topic_name (str) : The MSK topic name where the post message will be stored
+    *msg (dict) : key-value pair message posted
 
     Return
     status_code (int) : The response status code from the server
@@ -124,7 +141,7 @@ def post_message(topics, *arg):
         "records": [
             {
             #Data should be send as pairs of column_name:value, with different columns separated by commas       
-            "value": arg
+            "value": msg
             }
         ]
     }, default=str)
