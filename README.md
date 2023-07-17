@@ -27,6 +27,7 @@ cd confluent-7.2.0/bin/
 ./kafka-rest-start /home/ec2-user/confluent-7.2.0/etc/kafka-rest/kafka-rest.properties
 ```
 ### Start Posting data to Kafka topics
+The `Post` folder contain two files - `user_posting_emulation_streaming.py` for streaming data and `user_posting_emulation.py` for batch data.
 - For batch data
 ```
 python3 python3 user_posting_emulation.py
