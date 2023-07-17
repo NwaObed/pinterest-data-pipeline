@@ -30,7 +30,7 @@ cd confluent-7.2.0/bin/
 The `Post` folder contain two files - `user_posting_emulation_streaming.py` for streaming data and `user_posting_emulation.py` for batch data.
 - For batch data
 ```
-python3 python3 user_posting_emulation.py
+python3 user_posting_emulation.py
 ```
 If you go to your S3, you should start seeing the data arriving
 
