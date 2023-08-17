@@ -205,7 +205,7 @@ df_pin.writeStream \
     - On your databricks account, click on file
     - Click on `Import Notebook`
     - Drag and drop the notebook or browse to the location of the `Notebook` folder
-    - Click on `Import`\
+    - Click on `Import`
 
 ## Licence information
 [Back to Table of Contents](#table-of-contents)
