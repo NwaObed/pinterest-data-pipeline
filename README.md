@@ -2,9 +2,9 @@
 ![Data pipeline architecture](./Images/pinterest-architecture.png)
 ## Table of Contents
 - [Description](#description)
+- [File Structure](#file-structure)
 - [Installation](#installation)
 - [Usage Instructions](#usage-instructions)
-- [File Structure](#file-structure)
 - [Licence information](#licence)
 
 ### Description
@@ -146,6 +146,22 @@ df_pin.writeStream \
     .option("checkpointLocation", "/tmp/kinesis/_checkpoints/") \
     .table("12853887c065_pin_table")
 ```
+
+## File structure
+- Post
+    - `database_util.py`
+        - `Class:` Implements a class that connects to AWS database
+        - Methods
+            - `__init__:` instantiaties the database credentials
+            - `read_db_creds:` reads the database creds
+            - `create_db_connector:` Creates an sqlalchemy engine to connect to the  database
+    - `pinterest_batch_processing.py`
+        - `Class:` Implements the `PinterestPost` class that emulates Pinterest user posts
+        - Methods
+            - `emulate_pinterest:` Post data from randomly selected rows on the connected AWS database. This method calls `post_message` and `stream_message` when the argument `batch` is `True` or `False` respectively.
+            - `run_infinite_post_data_loop:` This runs an infinite user posts that is stored on the `Kafka topic` and automatically moved to `S3` via `MSK` connect. To do that, it calls the `emulate_pinterest` method.
+            - `post_message:` This methods make RESTful API request to Apache MSK cluster.
+    - `pinterest_streaming.py:` The `stream_message` function is implemented here to make `RESTful API` request that streams the user's post pn `Kinesis.`
 
 ## Installation
 - Create an `EC2` on `Amazon EC2` console.
