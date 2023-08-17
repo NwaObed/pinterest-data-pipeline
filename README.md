@@ -41,7 +41,7 @@ spark.sql("\
 
 This project is completed using the following steps:
 - Step 1: Create virtual environment
-`conda create -n pinterest_env`
+    - `conda create -n pinterest_env`
 
 - Step 2: Create and configure `EC2` instance
     - Create an `EC2` instance on your AWS account
