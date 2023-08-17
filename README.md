@@ -162,7 +162,9 @@ df_pin.writeStream \
             - `run_infinite_post_data_loop:` This runs an infinite user posts that is stored on the `Kafka topic` and automatically moved to `S3` via `MSK` connect. To do that, it calls the `emulate_pinterest` method.
             - `post_message:` This methods make RESTful API request to Apache MSK cluster.
     - `pinterest_streaming.py:` The `stream_message` function is implemented here to make `RESTful API` request that streams the user's post pn `Kinesis.`
-
+- Notebooks
+    - `databricks_batch_processing.ipynb`
+    - `streaming-pin-post.ipynb`
 ## Installation
 - Create an `EC2` on `Amazon EC2` console.
 - Connect to the `EC2` instance
