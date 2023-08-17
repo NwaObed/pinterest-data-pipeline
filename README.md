@@ -216,7 +216,7 @@ df_pin.writeStream \
     ```
     This will emulate the virtual environment from the `pinterest_env.yaml` file and install the `dependencies.`
 - Start user posting
-    `python3 run_infinite_post_data_loop`
+    - `python3 run_infinite_post_data_loop`
     As the data is stored on the Kafka topics, it is automatically moved to `S3` using the `MSK Connect`.
 
 - Upload notebook to databricks
